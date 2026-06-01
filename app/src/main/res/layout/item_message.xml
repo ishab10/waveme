@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <!-- Received Message Container -->
+    <LinearLayout
+        android:id="@+id/containerOther"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/peerAvatarOther"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/bg_avatar_circle"
+            android:src="@android:drawable/ic_menu_view"
+            android:scaleType="centerCrop"
+            android:padding="6dp"/>
+
+        <LinearLayout
+            android:id="@+id/layoutOther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_message_other"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            android:maxWidth="260dp"
+            android:elevation="1dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="2dp">
+
+                <TextView
+                    android:id="@+id/senderName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sender"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF" />
+
+                <ImageView
+                    android:id="@+id/iv_secure_other"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@android:drawable/ic_lock_idle_lock"
+                    android:visibility="gone"
+                    app:tint="#FFFFFF" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/messageContentOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hey, are you online?"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:textColorLink="#2196F3" />
+
+            <ImageView
+                android:id="@+id/messageImageOther"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:layout_marginTop="6dp" />
+
+            <TextView
+                android:id="@+id/messageTimeOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="12:00 PM"
+                android:textColor="#DDDDDD"
+                android:textSize="9sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Sent Message Container -->
+    <LinearLayout
+        android:id="@+id/layoutMe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_message_me"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:maxWidth="280dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:elevation="1dp">
+
+        <TextView
+            android:id="@+id/messageContentMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yes! Connected."
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:textColorLink="#E0F2F1" />
+            
+        <ImageView
+            android:id="@+id/messageImageMe"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:layout_marginTop="6dp" />
+            
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="end"
+            android:gravity="center_vertical"
+            android:layout_marginTop="2dp">
+
+            <ImageView
+                android:id="@+id/iv_secure_me"
+                android:layout_width="9dp"
+                android:layout_height="9dp"
+                android:layout_marginEnd="4dp"
+                android:src="@android:drawable/ic_lock_idle_lock"
+                android:visibility="gone"
+                app:tint="#E0F2F1" />
+
+            <TextView
+                android:id="@+id/messageTimeMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:text="12:00 PM"
+                android:textColor="#E0F2F1"
+                android:textSize="9sp" />
+
+            <TextView
+                android:id="@+id/messageStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sent"
+                android:textSize="9sp"
+                android:textColor="#E0F2F1" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

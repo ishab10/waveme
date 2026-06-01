@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaveMe Sync Node Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        .top-label {
+            background-color: #1f1b24;
+            color: #888;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 4px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #2c2c2c;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+        }
+        h1 { margin: 0; font-size: 1.4rem; color: #bb86fc; font-weight: 500; }
+
+        #status-bar {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+        .status-value {
+            color: #e0e0e0;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        #pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #cf6679;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        #pulse-dot.online {
+            background-color: #03dac6;
+            box-shadow: 0 0 0 rgba(3, 218, 198, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(3, 218, 198, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(3, 218, 198, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(3, 218, 198, 0); }
+        }
+
+        #messages-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: #121212;
+            padding: 20px 25px;
+        }
+        #messages-list {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .message-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            border-left: 3px solid #333;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: baseline;
+        }
+        .message-item:hover {
+            border-left-color: #bb86fc;
+            background-color: #252525;
+        }
+        .timestamp {
+            color: #777;
+            font-size: 0.75rem;
+            min-width: 70px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .sender {
+            color: #03dac6;
+            font-weight: 600;
+            margin: 0 10px;
+            font-size: 0.9rem;
+        }
+        .content {
+            flex-grow: 1;
+            word-break: break-all;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .room {
+            color: #bb86fc;
+            font-size: 0.7rem;
+            background: #2c2c2c;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #121212; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+    </style>
+</head>
+<body>
+    <div class="top-label">WaveMe Sync Node — LAN Only</div>
+    <header>
+        <h1>Wave Sync Node</h1>
+        <div id="status-bar">
+            <div class="status-item">
+                <div id="pulse-dot"></div>
+                <span id="status-text">Node Offline</span>
+            </div>
+            <div class="status-item">
+                Total Logs: <span id="msg-count" class="status-value">0</span>
+            </div>
+            <div class="status-item">
+                Last Sync: <span id="last-sync" class="status-value">Never</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="messages-container">
+        <div id="messages-list"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const pulseDot = document.getElementById('pulse-dot');
+        const statusText = document.getElementById('status-text');
+        const msgCountEl = document.getElementById('msg-count');
+        const lastSyncEl = document.getElementById('last-sync');
+        const messagesList = document.getElementById('messages-list');
+
+        let totalMessages = 0;
+
+        // Connect to Socket.io
+        const socket = io();
+
+        socket.on('connect', () => {
+            pulseDot.classList.add('online');
+            statusText.innerText = 'Sync Node Online';
+        });
+
+        socket.on('disconnect', () => {
+            pulseDot.classList.remove('online');
+            statusText.innerText = 'Node Offline';
+        });
+
+        function formatTimestamp(ts) {
+            const date = new Date(ts);
+            return date.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function updateMetadata() {
+            msgCountEl.innerText = totalMessages;
+            lastSyncEl.innerText = formatTimestamp(Date.now());
+        }
+
+        function createMessageElement(msg) {
+            const div = document.createElement('div');
+            div.className = 'message-item';
+            div.innerHTML = `
+                <span class="timestamp">${formatTimestamp(msg.timestamp)}</span>
+                <span class="sender">${msg.sender}</span>
+                <span class="content">${msg.content}</span>
+                <span class="room">#${msg.room}</span>
+            `;
+            return div;
+        }
+
+        // Handle real-time messages
+        socket.on('new_msg', (msg) => {
+            totalMessages++;
+            const el = createMessageElement(msg);
+            messagesList.prepend(el);
+            updateMetadata();
+        });
+
+        // Load existing messages
+        fetch('/messages')
+            .then(res => res.json())
+            .then(messages => {
+                totalMessages = messages.length;
+                msgCountEl.innerText = totalMessages;
+
+                if (messages.length > 0) {
+                    lastSyncEl.innerText = formatTimestamp(messages[0].received_at || messages[0].timestamp);
+                }
+
+                messages.forEach(msg => {
+                    const el = createMessageElement(msg);
+                    messagesList.appendChild(el);
+                });
+            })
+            .catch(err => console.error('Failed to load messages:', err));
+    </script>
+</body>
+</html>

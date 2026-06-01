@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Wave</string>
+    <string name="permissions_title">Connectivity Permissions</string>
+    <string name="permissions_description">To connect and chat with nearby peers without internet, Wave needs access to several connectivity features. We value your privacy and only use these for discovery.</string>
+    <string name="location_permission">Location</string>
+    <string name="location_permission_desc">Used by Android to scan for nearby Bluetooth and Wi-Fi devices. Your actual position is never saved.</string>
+    <string name="bluetooth_permission">Bluetooth &amp; Nearby Devices</string>
+    <string name="bluetooth_permission_desc">Allows the app to advertise your presence and find other Wave users nearby.</string>
+    <string name="grant_permissions">Grant Permissions</string>
+    <string name="not_now">Not Now</string>
+    <string name="title_lodger">Lodger</string>
+    <string name="title_discovery">Discovery</string>
+    <string name="title_gallery">Gallery</string>
+</resources>
